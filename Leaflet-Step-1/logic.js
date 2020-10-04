@@ -22,7 +22,9 @@ function createFeatures(earthquakeData) {
     // Give each feature a popup describing the place and time of the earthquake
     function onEachFeature(feature, layer) {
         layer.bindPopup("<h3>" + feature.properties.place +
-            "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
+            "</h3><hr><p>Mag " + feature.properties.mag + " Depth " + feature.geometry.coordinates[2] + "</p>" +
+            "<p>" + new Date(feature.properties.time) + "</p>");
+        console.log(feature.geometry.coordinates[2])
     }
 
     // Create a GeoJSON layer containing the features array on the earthquakeData object
@@ -49,15 +51,26 @@ function createFeatures(earthquakeData) {
     //             return "green";
     //     }
     // }
-    function chooseColor(depth) {
-        if (depth > 90) {
-            depth = "red";
-        } else if (depth < 50) {
-            depth = "orange";
-        } else if (depth < 20) {
-            depth = "green";
-        }
+
+
+    // function getColor(depth) {
+    //     if (depth > 90) {
+    //         depth = "red";
+    //     } else if (depth < 50) {
+    //         depth = "orange";
+    //     } else if (depth < 20) {
+    //         depth = "green";
+    //     }
+    // }
+
+    function getColor(d) {
+        var mapScale = chroma.scale(['#008000', '#ffb700', '#ff0000'])
+            .classes([-10, 10, 20, 50, 70, 90]);
+        return mapScale(d)
     }
+
+    // var getColor = chroma.scale(['#008000', '#ff0000']).domain([0, 1000], 3, 'log');
+    // console.log(getColor)
 
     // function markerSize(depth) {
     //     return .2;
@@ -68,11 +81,11 @@ function createFeatures(earthquakeData) {
         pointToLayer: function(feature, latlng) {
             return L.circleMarker(latlng, {
                 radius: feature.properties.mag * 5,
-                fillColor: chooseColor(feature.geometry.coordinates[2]),
-                color: "green",
+                fillColor: getColor(feature.geometry.coordinates[2]),
+                color: "grey",
                 weight: 1,
                 opacity: 1,
-                fillOpacity: feature.geometry.coordinates[2] / 50
+                fillOpacity: feature.geometry.coordinates[2] / 5
             });
         }
     })
@@ -131,47 +144,31 @@ function createMap(earthquakes) {
 
 
     // // Set up the legend
-    // var legend = L.control({ position: "bottomright" });
-    // legend.onAdd = function() {
-    //     var div = L.DomUtil.create("div", "info legend");
-    //     var limits = [0, 10, 20];
-    //     var colors = ["red", "orange", "green"];
-    //     var labels = [];
+    var legend = L.control({ position: "bottomright" });
+    legend.onAdd = function() {
+        var div = L.DomUtil.create("div", "info legend");
+        var limits = [-10, 10, 30, 50, 70, 90];
+        var colors = ['#008000', '#a7cc00', '#ffed00', '#ffb700', '#ff7a00', '#ff0000']
+        var labels = [];
 
-    //     // Add min & max
-    //     var legendInfo = "<h1>Depth</h1>" +
-    //         "<div class=\"labels\">" +
-    //         "<div class=\"min\">" + limits[0] + "</div>" +
-    //         "<div class=\"max\">" + limits[limits.length - 1] + "</div>" +
-    //         "</div>";
+        // Add min & max
+        var legendInfo = "<h1>Depth</h1>" +
+            "<div class=\"labels\">" + limits +
+            "<div class=\"min\">" + limits[0] + "</div>" +
+            "<div class=\"max\">" + limits[limits.length - 1] + "</div>" +
+            "</div>";
 
-    //     div.innerHTML = legendInfo;
+        div.innerHTML = legendInfo;
 
-    //     limits.forEach(function(limit, index) {
-    //         labels.push("<li style=\"background-color: " + colors[index] + "\"></li>");
-    //     });
+        limits.forEach(function(limit, index) {
+            labels.push("<li style=\"background-color: " + colors[index] + "\"></li>");
+        });
 
-    //     div.innerHTML += "<ul>" + labels.join("") + "</ul>";
-    //     return div;
-    // };
-
-    var legend = L.control({ position: 'bottomright' });
-
-    legend.onAdd = function(map) {
-
-        var div = L.DomUtil.create('div', 'info legend'),
-            grades = [0, 10, 20, 50, 100, 200, 500, 1000],
-            labels = [];
-
-        // loop through our density intervals and generate a label with a colored square for each interval
-        for (var i = 0; i < grades.length; i++) {
-            div.innerHTML +=
-                '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
-                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-        }
-
+        div.innerHTML += "<ul>" + labels.join("") + "</ul>";
         return div;
     };
+
+
 
     // Adding legend to the map
     legend.addTo(myMap);
