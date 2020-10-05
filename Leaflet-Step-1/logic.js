@@ -24,58 +24,30 @@ function createFeatures(earthquakeData) {
         layer.bindPopup("<h3>" + feature.properties.place +
             "</h3><hr><p>Mag " + feature.properties.mag + " Depth " + feature.geometry.coordinates[2] + "</p>" +
             "<p>" + new Date(feature.properties.time) + "</p>");
-        console.log(feature.geometry.coordinates[2])
+        // console.log(feature.geometry.coordinates[2])
     }
 
-    // Create a GeoJSON layer containing the features array on the earthquakeData object
-
-    // Run the onEachFeature function once for each piece of data in the array
-    // var earthquakes = L.geoJSON(earthquakeData, {
-    //     style: gardenStyle,
-    //     onEachFeature: onEachFeature
-    // });
-
-    // function chooseColor(dmin) {
-    //     switch (dmin) {
-    //         case >.05:
-    //             return "yellow";
-    //         case "Bronx":
-    //             return "red";
-    //         case "Manhattan":
-    //             return "orange";
-    //         case "Queens":
-    //             return "green";
-    //         case "Staten Island":
-    //             return "purple";
-    //         default:
-    //             return "green";
-    //     }
-    // }
-
-
-    // function getColor(depth) {
-    //     if (depth > 90) {
-    //         depth = "red";
-    //     } else if (depth < 50) {
-    //         depth = "orange";
-    //     } else if (depth < 20) {
-    //         depth = "green";
-    //     }
-    // }
-
     function getColor(d) {
-        var mapScale = chroma.scale(['#008000', '#ffb700', '#ff0000'])
+        var mapScale = chroma.scale(['#008000', '#a7cc00', '#ffed00', '#ffb700', '#ff7a00', '#ff0000'])
             .classes([-10, 10, 20, 50, 70, 90]);
         return mapScale(d)
     }
 
+    // function getColor(d) {
+    //     return d > 1000 ? '#ff0000' :
+    //         d > 500 ? '#ff0000' :
+    //         d > 200 ? '#ff0000' :
+    //         d > 100 ? '#ff7a00' :
+    //         d > 50 ? '#ffb700' :
+    //         d > 20 ? '#ffed00' :
+    //         d > 10 ? '#a7cc00' :
+    //         '#008000';
+    // }
+
     // var getColor = chroma.scale(['#008000', '#ff0000']).domain([0, 1000], 3, 'log');
     // console.log(getColor)
 
-    // function markerSize(depth) {
-    //     return .2;
-    // }
-
+    // Create a GeoJSON layer containing the features array on the earthquakeData object
     var earthquakes = L.geoJSON(earthquakeData, {
         onEachFeature: onEachFeature,
         pointToLayer: function(feature, latlng) {
@@ -143,33 +115,38 @@ function createMap(earthquakes) {
     }).addTo(myMap);
 
 
-    // // Set up the legend
-    var legend = L.control({ position: "bottomright" });
+    function getColor(d) {
+        var mapScale = chroma.scale(['#008000', '#a7cc00', '#ffed00', '#ffb700', '#ff7a00', '#ff0000'])
+            .classes([-10, 10, 20, 50, 70, 90]);
+        return mapScale(d)
+    }
+    // Set up the legend
+    var legend = L.control({ position: 'bottomright' });
+
     legend.onAdd = function() {
-        var div = L.DomUtil.create("div", "info legend");
-        var limits = [-10, 10, 30, 50, 70, 90];
-        var colors = ['#008000', '#a7cc00', '#ffed00', '#ffb700', '#ff7a00', '#ff0000']
-        var labels = [];
 
-        // Add min & max
-        var legendInfo = "<h1>Depth</h1>" +
-            "<div class=\"labels\">" + limits +
-            "<div class=\"min\">" + limits[0] + "</div>" +
-            "<div class=\"max\">" + limits[limits.length - 1] + "</div>" +
-            "</div>";
+        var div = L.DomUtil.create('div', 'info legend'),
+            depth = [-10, 10, 30, 50, 70, 90],
+            labels = [],
+            from, to;
 
-        div.innerHTML = legendInfo;
+        //Adding lable title and color
+        for (var i = 0; i < depth.length; i++) {
+            from = depth[i];
+            to = depth[i + 1];
 
-        limits.forEach(function(limit, index) {
-            labels.push("<li style=\"background-color: " + colors[index] + "\"></li>");
-        });
+            labels.push(
+                '<li style="background:' + getColor(from + 1) + '"></li> ' +
+                from + (to ? '&ndash;' + to : '+'));
+            console.log(labels)
+        }
 
-        div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+        div.innerHTML += "<h1>Depth</h1>" + labels.join('<br>');
         return div;
+
     };
-
-
 
     // Adding legend to the map
     legend.addTo(myMap);
+
 }
