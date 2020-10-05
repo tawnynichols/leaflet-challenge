@@ -15,7 +15,7 @@ html {
 }
 
 
-/* CSS from the Leaflet-Choropleth documentation */
+/* Leaflet Legend */
 
 .legend {
     padding: 6px 8px;
@@ -28,28 +28,8 @@ html {
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
-.legend ul {
-    padding: 0;
-    margin: 0;
-    clear: both;
-    list-style-type: none;
-}
-
 .legend li {
     display: inline-block;
-    width: 30px;
-    height: 22px;
-}
-
-.legend .min {
-    float: left;
-    padding-bottom: 5px;
-}
-
-.legend .max {
-    float: right;
-}
-
-h1 {
-    text-align: center;
+    width: 18px;
+    height: 18px;
 }

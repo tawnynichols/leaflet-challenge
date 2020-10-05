@@ -13,7 +13,6 @@ d3.json(queryUrl, function(data) {
 });
 
 
-
 //######################################
 
 function createFeatures(earthquakeData) {
@@ -52,7 +51,7 @@ function createFeatures(earthquakeData) {
         onEachFeature: onEachFeature,
         pointToLayer: function(feature, latlng) {
             return L.circleMarker(latlng, {
-                radius: feature.properties.mag * 5,
+                radius: feature.properties.mag * 3,
                 fillColor: getColor(feature.geometry.coordinates[2]),
                 color: "grey",
                 weight: 1,
@@ -138,7 +137,6 @@ function createMap(earthquakes) {
             labels.push(
                 '<li style="background:' + getColor(from + 1) + '"></li> ' +
                 from + (to ? '&ndash;' + to : '+'));
-            console.log(labels)
         }
 
         div.innerHTML += "<h1>Depth</h1>" + labels.join('<br>');
