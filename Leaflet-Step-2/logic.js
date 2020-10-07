@@ -17,7 +17,9 @@ d3.json(queryUrl, function(data) {
     // Create a GeoJSON layer containing the features array on the earthquakeData object
     var earthquakes = L.geoJSON(data, {
         onEachFeature: function(feature, layer) {
-            layer.bindPopup("Place:" + feature.properties.place + "<br> Magnitude: " + feature.properties.mag + "<br> Time: " + new Date(feature.properties.time));
+            layer.bindPopup("<h3>" + feature.properties.place +
+                "</h3><hr><p><b>Mag: </b>" + feature.properties.mag + "<b> Depth: </b>" + feature.geometry.coordinates[2] + "</p>" +
+                "<p>" + new Date(feature.properties.time) + "</p>");
         },
         // Create circles for pointers
         pointToLayer: function(feature, latlng) {
@@ -43,13 +45,13 @@ d3.json(queryUrl, function(data) {
                 return {
                     color: "purple",
                     fillColor: "white",
-                    weight: 1,
+                    weight: 2,
                     fillOpacity: 0
                 }
             },
             onEachFeature: function(feature, layer) {
                 console.log(feature.coordinates)
-                layer.bindPopup("Plate Name: " + feature.properties.Name)
+                layer.bindPopup("<h2>" + "Plate Name: " + feature.properties.Name + "</h2>")
             }
         })
 
@@ -95,7 +97,7 @@ function createMap(plates, earthquakes) {
         center: [
             37.09, -95.71
         ],
-        zoom: 5,
+        zoom: 4,
         layers: [streetmap, earthquakes, plates]
     });
 

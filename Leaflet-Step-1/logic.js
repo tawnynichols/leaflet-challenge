@@ -12,9 +12,6 @@ d3.json(queryUrl, function(data) {
 
 });
 
-
-//######################################
-
 function createFeatures(earthquakeData) {
 
     // Define a function we want to run once for each feature in the features array
@@ -31,20 +28,6 @@ function createFeatures(earthquakeData) {
             .classes([-10, 10, 20, 50, 70, 90]);
         return mapScale(d)
     }
-
-    // function getColor(d) {
-    //     return d > 1000 ? '#ff0000' :
-    //         d > 500 ? '#ff0000' :
-    //         d > 200 ? '#ff0000' :
-    //         d > 100 ? '#ff7a00' :
-    //         d > 50 ? '#ffb700' :
-    //         d > 20 ? '#ffed00' :
-    //         d > 10 ? '#a7cc00' :
-    //         '#008000';
-    // }
-
-    // var getColor = chroma.scale(['#008000', '#ff0000']).domain([0, 1000], 3, 'log');
-    // console.log(getColor)
 
     // Create a GeoJSON layer containing the features array on the earthquakeData object
     var earthquakes = L.geoJSON(earthquakeData, {
@@ -64,8 +47,6 @@ function createFeatures(earthquakeData) {
     // Sending our earthquakes layer to the createMap function
     createMap(earthquakes);
 }
-
-//######################################
 
 function createMap(earthquakes) {
 
