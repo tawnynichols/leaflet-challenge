@@ -6,35 +6,8 @@ var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_we
 
 // Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
-    // Once we get a response, send the data.features object to the createFeatures function
-    createFeatures(data.features);
-    console.log(data.features[1].properties)
 
-});
-
-var geojson = "GEOboundaries.json"
-
-// Perform a GET request to the query URL
-d3.json(geojson, function(data2) {
-    // Once we get a response, send the data.features object to the createFeatures function
-    createFeatures(data2.features);
-    console.log(data2.features[1].properties)
-
-});
-
-//######################################
-
-function createFeatures(earthquakeData) {
-
-    // Define a function we want to run once for each feature in the features array
-    // Give each feature a popup describing the place and time of the earthquake
-    function onEachFeature(feature, layer) {
-        layer.bindPopup("<h3>" + feature.properties.place +
-            "</h3><hr><p>Mag " + feature.properties.mag + " Depth " + feature.geometry.coordinates[2] + "</p>" +
-            "<p>" + new Date(feature.properties.time) + "</p>");
-        // console.log(feature.geometry.coordinates[2])
-    }
-
+    //Create color function using chroma
     function getColor(d) {
         var mapScale = chroma.scale(['#008000', '#a7cc00', '#ffed00', '#ffb700', '#ff7a00', '#ff0000'])
             .classes([-10, 10, 20, 50, 70, 90]);
@@ -42,8 +15,11 @@ function createFeatures(earthquakeData) {
     }
 
     // Create a GeoJSON layer containing the features array on the earthquakeData object
-    var earthquakes = L.geoJSON(earthquakeData, {
-        onEachFeature: onEachFeature,
+    var earthquakes = L.geoJSON(data, {
+        onEachFeature: function(feature, layer) {
+            layer.bindPopup("Place:" + feature.properties.place + "<br> Magnitude: " + feature.properties.mag + "<br> Time: " + new Date(feature.properties.time));
+        },
+        // Create circles for pointers
         pointToLayer: function(feature, latlng) {
             return L.circleMarker(latlng, {
                 radius: feature.properties.mag * 3,
@@ -56,52 +32,34 @@ function createFeatures(earthquakeData) {
         }
     })
 
-    // Sending our earthquakes layer to the createMap function
-    createMap(earthquakes);
-}
+    // Perform a GET request to the query URL
+    var geojson = "GEOboundaries.json"
 
-//######################################
+    // Once we get a response, send the features object to the geoJSON function
+    d3.json(geojson, function(PlateData) {
+        console.log(PlateData)
+        plates = L.geoJSON(PlateData, {
+            style: function(feature) {
+                return {
+                    color: "purple",
+                    fillColor: "white",
+                    weight: 1,
+                    fillOpacity: 0
+                }
+            },
+            onEachFeature: function(feature, layer) {
+                console.log(feature.coordinates)
+                layer.bindPopup("Plate Name: " + feature.properties.Name)
+            }
+        })
 
-function createFeatures2(PlateData) {
+        // Sending plates and earthquakes layer to the createMap function
+        createMap(plates, earthquakes);
+    });
 
-    // Define a function we want to run once for each feature in the features array
-    // Give each feature a popup describing the place and time of the earthquake
-    function onEachFeature(feature, layer) {
-        layer.bindPopup("<h3>" + feature.properties.place +
-            "</h3><hr><p>Mag " + feature.properties.mag + " Depth " + feature.geometry.coordinates[2] + "</p>" +
-            "<p>" + new Date(feature.properties.time) + "</p>");
-        // console.log(feature.geometry.coordinates[2])
-    }
+});
 
-    function getColor(d) {
-        var mapScale = chroma.scale(['#008000', '#a7cc00', '#ffed00', '#ffb700', '#ff7a00', '#ff0000'])
-            .classes([-10, 10, 20, 50, 70, 90]);
-        return mapScale(d)
-    }
-
-    // Create a GeoJSON layer containing the features array on the earthquakeData object
-    var plates = L.geoJSON(PlateData, {
-        onEachFeature: onEachFeature,
-        pointToLayer: function(feature, latlng) {
-            return L.circleMarker(latlng, {
-                radius: feature.properties.mag * 3,
-                fillColor: getColor(feature.geometry.coordinates[2]),
-                color: "grey",
-                weight: 1,
-                opacity: 1,
-                fillOpacity: feature.geometry.coordinates[2] / 5
-            });
-        }
-    })
-
-    // Sending our earthquakes layer to the createMap function
-    //createMap(PlateData);
-    plates.addTo(myMap);
-}
-
-//######################################
-
-function createMap(earthquakes) {
+function createMap(plates, earthquakes) {
 
     // Define streetmap and darkmap layers
     var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -128,7 +86,8 @@ function createMap(earthquakes) {
 
     // Create overlay object to hold our overlay layer
     var overlayMaps = {
-        Earthquakes: earthquakes
+        Earthquakes: earthquakes,
+        Plates: plates
     };
 
     // Create our map, giving it the streetmap and earthquakes layers to display on load
@@ -137,7 +96,7 @@ function createMap(earthquakes) {
             37.09, -95.71
         ],
         zoom: 5,
-        layers: [streetmap, earthquakes]
+        layers: [streetmap, earthquakes, plates]
     });
 
     // Create a layer control
@@ -147,7 +106,7 @@ function createMap(earthquakes) {
         collapsed: false
     }).addTo(myMap);
 
-
+    //Create color function using chroma
     function getColor(d) {
         var mapScale = chroma.scale(['#008000', '#a7cc00', '#ffed00', '#ffb700', '#ff7a00', '#ff0000'])
             .classes([-10, 10, 20, 50, 70, 90]);
@@ -156,6 +115,7 @@ function createMap(earthquakes) {
     // Set up the legend
     var legend = L.control({ position: 'bottomright' });
 
+    // create legend function
     legend.onAdd = function() {
 
         var div = L.DomUtil.create('div', 'info legend'),
