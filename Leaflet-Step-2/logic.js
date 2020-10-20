@@ -37,7 +37,8 @@ d3.json(queryUrl, function(data) {
 
     // Once we get a response, send the features object to the geoJSON function
     d3.json(geojson, function(PlateData) {
-        console.log(PlateData)
+
+        // Create variable for layering plates
         plates = L.geoJSON(PlateData, {
             style: function(feature) {
                 return {
@@ -48,7 +49,6 @@ d3.json(queryUrl, function(data) {
                 }
             },
             onEachFeature: function(feature, layer) {
-                console.log(feature.coordinates)
                 layer.bindPopup("<h2>" + "Plate Name: " + feature.properties.Name + "</h2>")
             }
         })
