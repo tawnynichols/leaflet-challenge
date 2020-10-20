@@ -6,7 +6,6 @@ var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_we
 d3.json(queryUrl, function(data) {
     // Once we get a response, send the data.features object to the createFeatures function
     createFeatures(data.features);
-    console.log(data.features[1].properties)
 
 });
 
@@ -18,9 +17,9 @@ function createFeatures(earthquakeData) {
         layer.bindPopup("<h3>" + feature.properties.place +
             "</h3><hr><p>Mag " + feature.properties.mag + " Depth " + feature.geometry.coordinates[2] + "</p>" +
             "<p>" + new Date(feature.properties.time) + "</p>");
-        // console.log(feature.geometry.coordinates[2])
     }
 
+    //Create color function using chroma
     function getColor(d) {
         var mapScale = chroma.scale(['#008000', '#a7cc00', '#ffed00', '#ffb700', '#ff7a00', '#ff0000'])
             .classes([-10, 10, 20, 50, 70, 90]);
@@ -93,6 +92,7 @@ function createMap(earthquakes) {
     }).addTo(myMap);
 
 
+    //Create color function using chroma
     function getColor(d) {
         var mapScale = chroma.scale(['#008000', '#a7cc00', '#ffed00', '#ffb700', '#ff7a00', '#ff0000'])
             .classes([-10, 10, 20, 50, 70, 90]);
