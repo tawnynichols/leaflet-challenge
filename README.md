@@ -5,4 +5,10 @@ The USGS provides earthquake data in several different formats, updated every 5 
 - When the user clicks on the marker, popups provide additional information about the earthquake.
 - The legend provides context for the map data.
 
+Added Leaflet-Step-1
+- Run index.html
+
 A second plot was created to illustrate the relationship between tectonic plates and seismic activity. Layer controls were added to the map with overlays that can be turned on and off independently.
+
+Added Leaflet-Step-2
+- Run index.html
