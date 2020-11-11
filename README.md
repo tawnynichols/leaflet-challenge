@@ -1,4 +1,4 @@
-# leaflet-challenge
+# leaflet-challenge - Visualizing Data with Leaflet
 
 The USGS provides earthquake data in several different formats, updated every 5 minutes. Used JSON to create a map (Leaflet) that plots all of the earthquakes from the data set based on their longitude and latitude. The map includes the following features:
 - Data markers reflect the earthquake's magnitude by their size and depth of the quake by color. Earthquakes with higher magnitudes appear more extensive, and earthquakes with greater depth appear darker in color.
